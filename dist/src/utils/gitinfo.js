@@ -5,7 +5,16 @@ const child_process_1 = require("child_process");
 const logger_1 = require("./logger");
 function git(command) {
     try {
-        return (0, child_process_1.execSync)(`git ${command}`).toString().trim();
+        const output = (0, child_process_1.spawnSync)(`git ${command}`);
+        const { stderr, stdout } = output;
+        if (stderr) {
+            logger_1.sphinxLogger.error(stderr.toString().trim());
+        }
+        else if (stdout) {
+            const outputText = stdout.toString().trim();
+            logger_1.sphinxLogger.info(outputText);
+            return outputText;
+        }
     }
     catch (e) {
         logger_1.sphinxLogger.error('Error running a git command, probably not running in a git repository');

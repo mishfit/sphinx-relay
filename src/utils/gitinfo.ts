@@ -4,12 +4,15 @@ import { sphinxLogger } from './logger'
 function git(command: string): string | void {
   try {
     const output = spawnSync(`git ${command}`)
-    const errorText = output.stderr.toString().trim()
+    const { stderr, stdout } = output
 
-    if (errorText) {
-      sphinxLogger.error(errorText)
-    } else {
-      return output.stdout.toString().trim()
+
+    if (stderr) {
+      sphinxLogger.error(stderr.toString().trim())
+    } else if (stdout) {
+      const outputText = stdout.toString().trim()
+      sphinxLogger.info(outputText)
+      return outputText
     }
   } catch (e) {
     sphinxLogger.error(
